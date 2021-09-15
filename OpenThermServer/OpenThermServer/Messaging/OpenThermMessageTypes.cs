@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OpenThermServer.tools
+﻿namespace OpenThermServer.Messaging
 {
 
     public static class OpenThermMessageTypes
@@ -22,12 +16,17 @@ namespace OpenThermServer.tools
         //(FAC0hex = -(10000hex - FACOhex) = -0540hex = -1344dec, dividing by 256 gives - 5.25)
         public enum DATA_TYPES
         {
-            F88, U16, S16, U8, S8, DU8, DS8, DFLAG8, FLAG8U8, SPECIALU8
+            F88, U16, S16, U8, S8, DU8, DS8, DFLAG8, FLAG8U8, SPECIALU8, SFLAG8
         }
 
-        public enum READ_WRITE
+        public enum DATA_DIRECTION
         {
             READ_DATA, READ_ACK, WRITE_DATA, WRITE_ACK, UNKNOWNID, INVALID_DATA, DATA_INVALID
+        }
+
+        public enum READ_WRITE_ALLOWED
+        {
+          READ, WRITE, READ_WRITE
         }
 
         //bit: description[clear / 0, set / 1]

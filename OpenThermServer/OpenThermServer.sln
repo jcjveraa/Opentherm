@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.31424.327
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenThermServer", "OpenThermServer\OpenThermServer.csproj", "{9604126A-5DFB-463F-BF8A-580EC44F283D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenThermServerTests", "OpenThermServerTests\OpenThermServerTests.csproj", "{F4717939-0ED4-48E1-B8D8-6156CFB110E2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{9604126A-5DFB-463F-BF8A-580EC44F283D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9604126A-5DFB-463F-BF8A-580EC44F283D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9604126A-5DFB-463F-BF8A-580EC44F283D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4717939-0ED4-48E1-B8D8-6156CFB110E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4717939-0ED4-48E1-B8D8-6156CFB110E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4717939-0ED4-48E1-B8D8-6156CFB110E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4717939-0ED4-48E1-B8D8-6156CFB110E2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
