@@ -1,8 +1,8 @@
 ﻿Nr.;Msg;Data Object;Type;Description 
 0;R -;Status;flag8 / flag8;Master and Slave Status flags. 
-1;- W;TSet;f8.8;Control setpoint  ie CH  water temperature setpoint (°C) 
-2;- W;M-Config / M-MemberIDcode;flag8 / u8;Master Configuration Flags /  Master MemberID Code 
-3;R -;S-Config / S-MemberIDcode;flag8 / u8;Slave Configuration Flags /  Slave MemberID Code 
+1;- W;TSet;f8.8;Control setpoint ie CH water temperature setpoint (°C) 
+2;- W;M-Config / M-MemberIDcode;flag8 / u8;Master Configuration Flags / Master MemberID Code 
+3;R -;S-Config / S-MemberIDcode;flag8 / u8;Slave Configuration Flags / Slave MemberID Code 
 4;- W;Command;u8 / u8;Remote Command 
 5;R -;ASF-flags / OEM-fault-code;flag8 / u8;Application-specific fault flags and OEM fault code 
 6;R -;RBP-flags;flag8 / flag8;Remote boiler parameter transfer-enable & read/write flags 
@@ -17,7 +17,7 @@
 15;R -;Max-Capacity / Min-Mod-Level;u8 / u8;Maximum boiler capacity (kW) / Minimum boiler modulation level(%) 
 16;- W;TrSet;f8.8;Room Setpoint (°C) 
 17;R -;Rel.-mod-level;f8.8;Relative Modulation Level (%) 
-18;R -;CH-pressure;f8.8;Water pressure in CH circuit  (bar) 
+18;R -;CH-pressure;f8.8;Water pressure in CH circuit (bar) 
 19;R -;DHW-flow-rate;f8.8;Water flow rate in DHW circuit. (litres/minute) 
 20;R W;Day-Time;special / u8;Day of Week and Time of Day 
 21;R W;Date;u8 / u8;Calendar date 
@@ -29,16 +29,16 @@
 27;R -;Toutside;f8.8;Outside temperature (°C) 
 28;R -;Tret;f8.8;Return water temperature (°C) 
 29;R -;Tstorage;f8.8;Solar storage temperature (°C) 
-30;R -;Tcollector;f8.8;Solar collector temperature (°C)  
+30;R -;Tcollector;f8.8;Solar collector temperature (°C) 
 31;R -;TflowCH2;f8.8;Flow water temperature CH2 circuit (°C) 
 32;R -;Tdhw2;f8.8;Domestic hot water temperature 2 (°C) 
 33;R -;Texhaust;s16;Boiler exhaust temperature (°C) 
-48;R -;TdhwSet-UB / TdhwSet-LB;s8 / s8;DHW setpoint upper & lower bounds for adjustment  (°C) 
-49;R -;MaxTSet-UB / MaxTSet-LB;s8 / s8;Max CH water setpoint upper & lower bounds for adjustment  (°C) 
-50;R -;Hcratio-UB / Hcratio-LB;s8 / s8;OTC heat curve ratio upper & lower bounds for adjustment  
-56;R W;TdhwSet;f8.8;DHW setpoint (°C)   (Remote parameter 1) 
-57;R W;MaxTSet;f8.8;Max CH water setpoint (°C)  (Remote parameters 2) 
-58;R W;Hcratio;f8.8;OTC heat curve ratio (°C)  (Remote parameter 3) 
+48;R -;TdhwSet-UB / TdhwSet-LB;s8 / s8;DHW setpoint upper & lower bounds for adjustment (°C) 
+49;R -;MaxTSet-UB / MaxTSet-LB;s8 / s8;Max CH water setpoint upper & lower bounds for adjustment (°C) 
+50;R -;Hcratio-UB / Hcratio-LB;s8 / s8;OTC heat curve ratio upper & lower bounds for adjustment 
+56;R W;TdhwSet;f8.8;DHW setpoint (°C) (Remote parameter 1) 
+57;R W;MaxTSet;f8.8;Max CH water setpoint (°C) (Remote parameters 2) 
+58;R W;Hcratio;f8.8;OTC heat curve ratio (°C) (Remote parameter 3) 
 100;R -;Remote override function;flag8 / -;Function of manual and program changes in master and remote room setpoint. 
 115;R -;OEM diagnostic code;u16;OEM-specific diagnostic/service code 
 116;R W;Burner starts;u16;Number of starts burner 
@@ -49,7 +49,7 @@
 121;R W;CH pump operation hours;u16;Number of hours that CH pump has been running 
 122;R W;DHW pump/valve operation hours;u16;Number of hours that DHW pump has been running or DHW valve has been opened 
 123;R W;DHW burner operation hours;u16;Number of hours that burner is in operation during DHW mode 
-124;-  W;OpenTherm version Master;f8.8;The implemented version of the OpenTherm Protocol Specification in the master. 
+124;- W;OpenTherm version Master;f8.8;The implemented version of the OpenTherm Protocol Specification in the master. 
 125;R -;OpenTherm version Slave;f8.8;The implemented version of the OpenTherm Protocol Specification in the slave. 
 126;- W;Master-version;u8 / u8;Master product version number and type 
 127;R -;Slave-version;u8 / u8;Slave product version number and type 

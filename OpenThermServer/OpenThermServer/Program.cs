@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenThermServer.Messaging;
+using System;
 
 namespace OpenThermServer
 {
@@ -7,6 +8,8 @@ namespace OpenThermServer
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
+
+            Console.WriteLine(OpenThermMessageLookupTable.GetMessageDescriptions(1).Description);
         }
     }
 }

@@ -1,11 +1,11 @@
 ﻿namespace OpenThermServer.Messaging
 {
-    public class OpenThermMessageF88 : OpenThermMessageBase, IHasValue<float>
+    public class OpenThermMessageF88 : OpenThermMessageBase
     {
 
         public OpenThermMessageF88(string dataString) : base(dataString)
         {
-            DataType = OpenThermMessageTypes.DATA_TYPES.F88;
+
         }
 
         public float Value

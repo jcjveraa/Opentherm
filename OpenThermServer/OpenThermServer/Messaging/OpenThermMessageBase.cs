@@ -2,14 +2,10 @@
 
 namespace OpenThermServer.Messaging
 {
-    interface IHasValue<T>
-    {
-        public T Value { get; }
-    }
     public class OpenThermMessageBase
     {
         public byte Nr { get; private set; }
-        public OpenThermMessageTypes.DATA_TYPES DataType { get; protected set; }
+        public OpenThermMessageTypes.DATA_TYPES DataType { get; private set; }
         public byte HB { get; private set; }
         public byte LB { get; private set; }
         public OpenThermMessageTypes.DATA_DIRECTION READ_WRITE { get; private set; }
@@ -28,8 +24,10 @@ namespace OpenThermServer.Messaging
             Nr = byte.Parse(dataSet[2]);
             HB = byte.Parse(dataSet[3], System.Globalization.NumberStyles.HexNumber);
             LB = byte.Parse(dataSet[4], System.Globalization.NumberStyles.HexNumber);
+            DataType = OpenThermMessageLookupTable.GetMessageDescriptions(Nr).DataType;
         }
 
+        //public dynamic Value { get; set; }
 
         private OpenThermMessageTypes.DATA_DIRECTION ParseType(string type)
         {

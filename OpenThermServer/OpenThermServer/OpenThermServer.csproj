@@ -6,9 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Update="Messaging\OpenThermMessageTable.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <None Remove="Messaging\OpenThermMessageTable.csv" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Messaging\OpenThermMessageTable.csv" />
   </ItemGroup>
 
 </Project>

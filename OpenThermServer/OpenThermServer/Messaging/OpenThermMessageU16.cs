@@ -1,10 +1,9 @@
 ﻿namespace OpenThermServer.Messaging
 {
-    public class OpenThermMessageU16 : OpenThermMessageBase, IHasValue<ushort>
+    public class OpenThermMessageU16 : OpenThermMessageBase
     {
         public OpenThermMessageU16(string dataString) : base(dataString)
         {
-            DataType = OpenThermMessageTypes.DATA_TYPES.U16;
         }
 
         public ushort Value

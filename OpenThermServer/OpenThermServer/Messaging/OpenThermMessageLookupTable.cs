@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -8,7 +10,29 @@ namespace OpenThermServer.Messaging
 {
     static class OpenThermMessageLookupTable
     {
-        // Loop over the OpenThermMEssageTable.csv & make all the descriptions
+        private static List<MessageDescription> _messageDescriptions = new();
+
+        public static MessageDescription GetMessageDescriptions(byte Nr)
+        {
+            return _messageDescriptions.Find(messageDescription => messageDescription.Nr == Nr);
+        }
+
+        static OpenThermMessageLookupTable()
+        {
+            // Loop over the OpenThermMEssageTable.csv & make all the descriptions
+
+            var thisAssembly = Assembly.GetExecutingAssembly();
+            Stream stream = thisAssembly.GetManifestResourceStream("OpenThermServer.Messaging.OpenThermMessageTable.csv");
+            StreamReader streamReader = new(stream);
+            // Skip the first line (header)
+            streamReader.ReadLine();
+
+            while (!streamReader.EndOfStream)
+            {
+                MessageDescription messageDescription = new(streamReader.ReadLine());
+                _messageDescriptions.Add(messageDescription);
+            }
+        }
     }
 
     class MessageDescription
@@ -27,7 +51,7 @@ namespace OpenThermServer.Messaging
                 Console.Error.WriteLine("Not 5 items in dataString");
                 return;
             }
-            
+
             Nr = byte.Parse(split_input[0]);
             DataObject = split_input[2];
             Description = split_input[4];

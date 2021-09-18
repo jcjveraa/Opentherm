@@ -14,7 +14,7 @@ namespace OpenThermServer.Messaging.Tests
             Assert.AreEqual(messageF88.Value, -5.25);
 
             Assert.IsTrue(messageF88.READ_WRITE == OpenThermMessageTypes.DATA_DIRECTION.WRITE_DATA);
-            Assert.AreEqual(messageF88.Id, 1);
+            Assert.AreEqual(messageF88.Nr, 1);
         }
     }
 }
