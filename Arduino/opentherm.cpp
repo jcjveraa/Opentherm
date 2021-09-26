@@ -53,13 +53,7 @@ void OPENTHERM::send(byte pin, OpenthermData &data, void (*callback)()) {
   _pin = pin;
   _callback = callback;
 
-  _data = data.type;
-  _data = (_data << 12) | data.id;
-  _data = (_data << 8) | data.valueHB;
-  _data = (_data << 8) | data.valueLB;
-  if (!_checkParity(_data)) {
-    _data = _data | 0x80000000;
-  }
+  _data = construct_data_frame(data);
 
   _clock = 1; // clock starts at HIGH
   _bitPos = 33; // count down (33 == start bit, 32-1 data, 0 == stop bit)
@@ -67,6 +61,19 @@ void OPENTHERM::send(byte pin, OpenthermData &data, void (*callback)()) {
 
   _active = true;
   _startWriteTimer();
+}
+
+unsigned long OPENTHERM::construct_data_frame(OpenthermData &data) {
+    unsigned long dataFrame = 0;
+    dataFrame = data.type;
+    dataFrame = (dataFrame << 12) | data.id;
+    dataFrame = (dataFrame << 8) | data.valueHB;
+    dataFrame = (dataFrame << 8) | data.valueLB;
+    if (!_checkParity(dataFrame)) {
+        dataFrame = dataFrame | 0x80000000;
+    }
+
+    return dataFrame;
 }
 
 bool OPENTHERM::getMessage(OpenthermData &data) {
@@ -359,38 +366,26 @@ bool OPENTHERM::_checkParity(unsigned long val) {
 }
 
 void OPENTHERM::printToSerial(OpenthermData &data) {
-  // if (data.type == OT_MSGTYPE_READ_DATA) {
-  //   Serial.print("ReadData");
-  // }
-  // else if (data.type == OT_MSGTYPE_READ_ACK) {
-  //   Serial.print("ReadAck");
-  // }
-  // else if (data.type == OT_MSGTYPE_WRITE_DATA) {
-  //   Serial.print("WriteData");
-  // }
-  // else if (data.type == OT_MSGTYPE_WRITE_ACK) {
-  //   Serial.print("WriteAck");
-  // }
-  // else if (data.type == OT_MSGTYPE_INVALID_DATA) {
-  //   Serial.print("InvalidData");
-  // }
-  // else if (data.type == OT_MSGTYPE_DATA_INVALID) {
-  //   Serial.print("DataInvalid");
-  // }
-  // else if (data.type == OT_MSGTYPE_UNKNOWN_DATAID) {
-  //   Serial.print("UnknownId");
-  // }
-  // else {
-  //   Serial.print(data.type, BIN);
-  // }
-  // Serial.print(" ");
-  // Serial.print(data.id);
-  // Serial.print(" ");
-  // Serial.print(data.valueHB, HEX);
-  // Serial.print(" ");
-  // Serial.print(data.valueLB, HEX);
-
   Serial.print(toFormattedString(data));
+}
+
+String OPENTHERM::toOTGWSerialString(OpenthermData &data) {
+    String result = "";
+
+    switch (data.type)
+    {
+    case OT_MSGTYPE_READ_DATA:
+    case OT_MSGTYPE_WRITE_DATA:
+    case OT_MSGTYPE_INVALID_DATA:
+        result.concat("T");
+        break;
+    default:
+        result.concat("B");
+        break;
+    }
+
+    result.concat(String(construct_data_frame(data), HEX));
+    return result;
 }
 
 String OPENTHERM::toFormattedString(OpenthermData &data) {

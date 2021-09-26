@@ -178,7 +178,7 @@ class OPENTHERM {
 
     /**
      * Helper function to debug content of data packet.
-     * It will print whatevet is in given data packet to Serial as formatted string.
+     * It will print whatever is in given data packet to Serial as formatted string.
      * 
      * @param data data packet to print to serial
      */
@@ -186,11 +186,27 @@ class OPENTHERM {
 
      /**
      * Helper function to debug content of data packet.
-     * It will print whatevet is in given data packet to Serial as formatted string.
+     * It will convert whatever is in given data packet to Serial as formatted string.
      * 
      * @param data data packet to print to serial
      */
     static String toFormattedString(OpenthermData &data);
+
+     /**
+     * Helper function to have this library work with OpenHab
+     * It will convert whatever is in given data packet to the same format as the original OTGW uses.
+     * 
+     * @param data data packet to print to serial
+     */
+    static String toOTGWSerialString(OpenthermData &data);
+
+    /**
+     * Helper function to create a data frame. 
+     * It will convert whatever is in given data packet to a long which is an opentherm data frame.
+     * 
+     * @param data data packet to convert to long
+     */
+    static unsigned long construct_data_frame(OpenthermData &data);
 
 #ifdef AVR
     static void _timerISR(); // this function needs to be public since its attached as interrupt handler

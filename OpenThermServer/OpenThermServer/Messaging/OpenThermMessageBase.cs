@@ -12,19 +12,32 @@ namespace OpenThermServer.Messaging
 
         public OpenThermMessageBase(string dataString)
         {
+            string[] dataSet = ParseMessageString(dataString);
+
+            Nr = byte.Parse(dataSet[2]);
+
+            READ_WRITE = ParseType(dataSet[1]);
+
+            HB = byte.Parse(dataSet[3], System.Globalization.NumberStyles.HexNumber);
+            LB = byte.Parse(dataSet[4], System.Globalization.NumberStyles.HexNumber);
+            DataType = OpenThermMessageLookupTable.GetMessageDescriptions(Nr).DataType;
+        }
+
+        public static string[] ParseMessageString(string dataString)
+        {
             string[] dataSet = dataString.Split(' ');
             if (dataSet.Length != 5)
             {
                 Console.Error.WriteLine("Not 5 items in dataString");
-                return;
+                return null;
             }
 
-            READ_WRITE = ParseType(dataSet[1]);
+            return dataSet;
+        }
 
-            Nr = byte.Parse(dataSet[2]);
-            HB = byte.Parse(dataSet[3], System.Globalization.NumberStyles.HexNumber);
-            LB = byte.Parse(dataSet[4], System.Globalization.NumberStyles.HexNumber);
-            DataType = OpenThermMessageLookupTable.GetMessageDescriptions(Nr).DataType;
+        public static byte GetMessageNrFromDataString(string dataString)
+        {
+            return byte.Parse(ParseMessageString(dataString)[2]);
         }
 
         //public dynamic Value { get; set; }
