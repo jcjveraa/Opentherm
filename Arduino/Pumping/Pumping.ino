@@ -114,8 +114,7 @@ void gateway_loop() {
       OPENTHERM::listen(THERMOSTAT_IN);
     }
     else if (OPENTHERM::getMessage(message)) {
-      client.print(OPENTHERM::toOTGWSerialString(message));
-      client.println();
+      client.println(OPENTHERM::toOTGWSerialString(message));
       OPENTHERM::send(BOILER_OUT, message); // forward message to boiler
       mode = MODE_LISTEN_SLAVE;
     }
@@ -125,8 +124,7 @@ void gateway_loop() {
       OPENTHERM::listen(BOILER_IN, 800); // response need to be send back by boiler within 800ms
     }
     else if (OPENTHERM::getMessage(message)) {
-      client.print(OPENTHERM::toOTGWSerialString(message));
-      client.println();
+      client.println(OPENTHERM::toOTGWSerialString(message));
       OPENTHERM::send(THERMOSTAT_OUT, message); // send message back to thermostat
       mode = MODE_LISTEN_MASTER;
     }
