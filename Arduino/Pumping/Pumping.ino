@@ -92,42 +92,10 @@ void loop()
     client.stop();
   // Serial.println("[Client disconnected]");
   }
+  else {
+    no_client_connected_loop();
+  }
 }
-
-// uint_fast8_t bitMasks [4]; // Note: this works because max pin number = RX = 3
-// uint_fast8_t ports [4]; // else you need to at least be able to cover all ports
-
-// void setup_digitalRead() {
-// // 0 to 3
-//   for (int i = 0; i <= RX; i++) {
-//     bitMasks[i] = digitalPinToBitMask(i);
-//     ports[i] = digitalPinToPort(i);
-//   }
-// }
-
-// int digitalRead(uint8_t pin)
-// {
-//   // client.print("Running the override digitalRead for pin: ");
-//   // client.print(pin);
-  
-//   // client.print(", is this the BOILER_IN pin? ");
-//   // client.println(pin == BOILER_IN);
-
-//   if(pin == RX) return !_digitalRead_(pin);
-//   return _digitalRead_(pin);
-// }
-
-// int _digitalRead_(uint8_t pin)
-// {
-// 	// uint8_t timer = digitalPinToTimer(pin);
-// 	// uint8_t bit = digitalPinToBitMask(pin);
-// 	// uint8_t port = digitalPinToPort(pin);
-
-// 	// if (port == NOT_A_PIN) return LOW;
-
-// 	if (*portInputRegister(ports[pin]) & bitMasks[pin]) return HIGH;
-// 	return LOW;
-// }
 
 void setup_pins() {
   pinMode(THERMOSTAT_IN, INPUT);
@@ -141,13 +109,12 @@ void setup_pins() {
 }
 
 void gateway_loop() {
-    if (mode == MODE_LISTEN_MASTER) {
+  if (mode == MODE_LISTEN_MASTER) {
     if (OPENTHERM::isSent() || OPENTHERM::isIdle() || OPENTHERM::isError()) {
       OPENTHERM::listen(THERMOSTAT_IN);
     }
     else if (OPENTHERM::getMessage(message)) {
-      client.print(F("-> "));
-      client.print(OPENTHERM::toFormattedString(message));
+      client.print(OPENTHERM::toOTGWSerialString(message));
       client.println();
       OPENTHERM::send(BOILER_OUT, message); // forward message to boiler
       mode = MODE_LISTEN_SLAVE;
@@ -158,17 +125,37 @@ void gateway_loop() {
       OPENTHERM::listen(BOILER_IN, 800); // response need to be send back by boiler within 800ms
     }
     else if (OPENTHERM::getMessage(message)) {
-      client.print(F("<- "));
-      client.print(OPENTHERM::toFormattedString(message));
-      client.println();
+      client.print(OPENTHERM::toOTGWSerialString(message));
       client.println();
       OPENTHERM::send(THERMOSTAT_OUT, message); // send message back to thermostat
       mode = MODE_LISTEN_MASTER;
     }
     else if (OPENTHERM::isError()) {
       mode = MODE_LISTEN_MASTER;
-      client.println(F("<- Timeout"));
-      client.println();
+    }
+  }
+}
+
+void no_client_connected_loop() {
+  if (mode == MODE_LISTEN_MASTER) {
+    if (OPENTHERM::isSent() || OPENTHERM::isIdle() || OPENTHERM::isError()) {
+      OPENTHERM::listen(THERMOSTAT_IN);
+    }
+    else if (OPENTHERM::getMessage(message)) {
+      OPENTHERM::send(BOILER_OUT, message); // forward message to boiler
+      mode = MODE_LISTEN_SLAVE;
+    }
+  }
+  else if (mode == MODE_LISTEN_SLAVE) {
+    if (OPENTHERM::isSent()) {
+      OPENTHERM::listen(BOILER_IN, 800); // response need to be send back by boiler within 800ms
+    }
+    else if (OPENTHERM::getMessage(message)) {
+      OPENTHERM::send(THERMOSTAT_OUT, message); // send message back to thermostat
+      mode = MODE_LISTEN_MASTER;
+    }
+    else if (OPENTHERM::isError()) {
+      mode = MODE_LISTEN_MASTER;
     }
   }
 }
