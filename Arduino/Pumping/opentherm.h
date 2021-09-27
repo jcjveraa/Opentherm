@@ -206,7 +206,7 @@ class OPENTHERM {
      * 
      * @param data data packet to convert to long
      */
-    static unsigned long construct_data_frame(OpenthermData &data);
+    static uint32_t construct_data_frame(OpenthermData &data);
 
 #ifdef AVR
     static void _timerISR(); // this function needs to be public since its attached as interrupt handler
