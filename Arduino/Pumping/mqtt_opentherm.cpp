@@ -1,7 +1,9 @@
 #include <ESP8266WiFi.h>
 #include <Ticker.h>
 #include <AsyncMqttClient.h>
+#include "mqtt_opentherm.h"
 #include "SuperSecretSettings.h"
+
 
 AsyncMqttClient mqttClient;
 Ticker mqttReconnectTimer;

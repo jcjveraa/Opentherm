@@ -1,10 +1,16 @@
 #pragma once
-#include <ESP8266WiFi.h>
-#include <Ticker.h>
+#ifndef MQTT_OPENTHERM_H
+#define MQTT_OPENTHERM_H
+
+//#include <ESP8266WiFi.h>
+//#include <Ticker.h>
 #include <AsyncMqttClient.h>
-#include "SuperSecretSettings.h"
+//#include "SuperSecretSettings.h"
 
 void   mqtt_setup();
+//void onMqttDisconnect();
 void onMqttDisconnect(AsyncMqttClientDisconnectReason reason);
-AsyncMqttClient mqttClient;
+extern AsyncMqttClient mqttClient;
 void connectToWifi();
+
+#endif
