@@ -22,7 +22,7 @@ volatile byte OPENTHERM::_mode = MODE_IDLE;
 volatile unsigned int OPENTHERM::_capture = 0;
 volatile byte OPENTHERM::_clock = 0;
 volatile byte OPENTHERM::_bitPos = 0;
-volatile uint32_t OPENTHERM::_data = 0;
+volatile unsigned long OPENTHERM::_data = 0;
 volatile bool OPENTHERM::_active = false;
 volatile int OPENTHERM::_timeoutCounter = -1;
 
@@ -386,7 +386,7 @@ String OPENTHERM::toOTGWSerialString(OpenthermData &data) {
 
     // Create the hexadecimal representation of the message, with leading zeroes
     char buffer[9];
-    sprintf(buffer, "%08lX",construct_data_frame(data));
+    sprintf(buffer, "%08X",construct_data_frame(data));
 
     result.concat(String(buffer));
     return result;
