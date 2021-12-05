@@ -85,6 +85,10 @@ void loop()
 
       if(client.available()){
         String line = client.readStringUntil('\r');
+        unsigned int bufSize = line.length();
+        char buff[bufSize+1];
+        line.toCharArray(buff, 10);
+        mqttClient.publish("iot/boiler/tester", 0, true, buff);
         
       }
 
