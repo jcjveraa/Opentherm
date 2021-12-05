@@ -27,9 +27,9 @@ while True:
                 if not data: break
                 rec_str = data.decode("utf-8")
                 print(rec_str)
-                if "PR=A" in rec_str:
-                    sendAndPrint(conn, "PR:A\r")
+                # if "PR=A" in rec_str:
+                    # sendAndPrint(conn, "PR:A\r")
                 if "PS=0"  in rec_str:
-                    sendAndPrint(conn, "PS:0\r")
+                    # sendAndPrint(conn, "PS:0\r")
                     infinite_repeat()
                 # conn.sendall(data)

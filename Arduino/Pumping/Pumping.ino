@@ -78,6 +78,11 @@ void loop()
     {
       server.handleClient();
 
+      if(client.available()){
+        String line = client.readStringUntil('\r');
+        
+      }
+
       #if TESTMODE==0
       gateway_loop();
       #endif
@@ -114,7 +119,9 @@ void gateway_loop() {
       OPENTHERM::listen(THERMOSTAT_IN);
     }
     else if (OPENTHERM::getMessage(message)) {
+      client.println("From Thermostat");
       client.println(OPENTHERM::toOTGWSerialString(message));
+      client.println(OPENTHERM::toFormattedString(message));
       OPENTHERM::send(BOILER_OUT, message); // forward message to boiler
       mode = MODE_LISTEN_SLAVE;
     }
@@ -124,7 +131,9 @@ void gateway_loop() {
       OPENTHERM::listen(BOILER_IN, 800); // response need to be send back by boiler within 800ms
     }
     else if (OPENTHERM::getMessage(message)) {
+      client.println("From boiler");
       client.println(OPENTHERM::toOTGWSerialString(message));
+      client.println(OPENTHERM::toFormattedString(message));
       OPENTHERM::send(THERMOSTAT_OUT, message); // send message back to thermostat
       mode = MODE_LISTEN_MASTER;
     }

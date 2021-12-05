@@ -384,7 +384,11 @@ String OPENTHERM::toOTGWSerialString(OpenthermData &data) {
         break;
     }
 
-    result.concat(String(construct_data_frame(data), HEX));
+    // Create the hexadecimal representation of the message, with leading zeroes
+    char buffer[9];
+    sprintf(buffer, "%08lX",construct_data_frame(data));
+
+    result.concat(String(buffer));
     return result;
 }
 
