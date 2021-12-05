@@ -194,7 +194,7 @@ class OPENTHERM {
 
      /**
      * Helper function to have this library work with OpenHab
-     * It will convert whatever is in given data packet to the same format as the original OTGW uses.
+     * It will convert whatever is in given data packet to the same format as the original OTGW uses, as an Arduino string.
      * 
      * @param data data packet to print to serial
      */

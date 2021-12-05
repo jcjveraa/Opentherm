@@ -7,3 +7,4 @@
 void   mqtt_setup();
 void onMqttDisconnect(AsyncMqttClientDisconnectReason reason);
 AsyncMqttClient mqttClient;
+void connectToWifi();

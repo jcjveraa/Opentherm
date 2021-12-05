@@ -45,7 +45,7 @@ void setup()
   mqtt_setup();
 
   WiFi.mode(WIFI_STA);
-    connectToWifi();
+  connectToWifi();
   while (WiFi.status() != WL_CONNECTED)
   {
       delay(500);
@@ -156,7 +156,9 @@ void no_client_connected_loop() {
     else if (OPENTHERM::getMessage(message)) {
       OPENTHERM::send(BOILER_OUT, message); // forward message to boiler
       mode = MODE_LISTEN_SLAVE;
-      mqttClient.publish("iot/boiler/test", 0, true, OPENTHERM::toOTGWSerialString(message));
+      char buffer[10];
+      OPENTHERM::toOTGWSerialString(message).toCharArray(buffer, 10);
+      mqttClient.publish("iot/boiler/test", 0, true, buffer);
     }
   }
   else if (mode == MODE_LISTEN_SLAVE) {
@@ -166,7 +168,9 @@ void no_client_connected_loop() {
     else if (OPENTHERM::getMessage(message)) {
       OPENTHERM::send(THERMOSTAT_OUT, message); // send message back to thermostat
       mode = MODE_LISTEN_MASTER;
-      mqttClient.publish("iot/boiler/test", 0, true, OPENTHERM::toOTGWSerialString(message));
+      char buffer[10];
+      OPENTHERM::toOTGWSerialString(message).toCharArray(buffer, 10);
+      mqttClient.publish("iot/boiler/test", 0, true, buffer);
     }
     else if (OPENTHERM::isError()) {
       mode = MODE_LISTEN_MASTER;
