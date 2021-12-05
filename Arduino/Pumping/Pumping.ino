@@ -158,7 +158,7 @@ void no_client_connected_loop() {
       mode = MODE_LISTEN_SLAVE;
       char buffer[10];
       OPENTHERM::toOTGWSerialString(message).toCharArray(buffer, 10);
-      mqttClient.publish("iot/boiler/test", 0, true, buffer);
+      mqttClient.publish("iot/boiler/OTMessage", 0, true, buffer);
     }
   }
   else if (mode == MODE_LISTEN_SLAVE) {
@@ -170,7 +170,7 @@ void no_client_connected_loop() {
       mode = MODE_LISTEN_MASTER;
       char buffer[10];
       OPENTHERM::toOTGWSerialString(message).toCharArray(buffer, 10);
-      mqttClient.publish("iot/boiler/test", 0, true, buffer);
+      mqttClient.publish("iot/boiler/OTMessage", 0, true, buffer);
     }
     else if (OPENTHERM::isError()) {
       mode = MODE_LISTEN_MASTER;
