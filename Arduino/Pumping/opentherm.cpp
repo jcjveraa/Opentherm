@@ -22,7 +22,7 @@ volatile byte OPENTHERM::_mode = MODE_IDLE;
 volatile unsigned int OPENTHERM::_capture = 0;
 volatile byte OPENTHERM::_clock = 0;
 volatile byte OPENTHERM::_bitPos = 0;
-volatile unsigned long OPENTHERM::_data = 0;
+volatile uint32_t OPENTHERM::_data = 0;
 volatile bool OPENTHERM::_active = false;
 volatile int OPENTHERM::_timeoutCounter = -1;
 
@@ -63,7 +63,7 @@ void OPENTHERM::send(byte pin, OpenthermData &data, void (*callback)()) {
   _startWriteTimer();
 }
 
-unsigned long OPENTHERM::construct_data_frame(OpenthermData &data) {
+uint32_t OPENTHERM::construct_data_frame(OpenthermData &data) {
     unsigned long dataFrame = 0;
     dataFrame = data.type;
     dataFrame = (dataFrame << 12) | data.id;
