@@ -8,9 +8,10 @@
 
 // What it's all about :)
 #include "opentherm.h"
+#include "mqtt_opentherm.h"
 
 #define TX 1
-  #define RX 3
+#define RX 3
 
 #define THERMOSTAT_IN RX  // Pin 17 on OTGW PIC ic
 #define THERMOSTAT_OUT 2  // Pin 3 on OTGW PIC ic
@@ -39,9 +40,12 @@ void setup()
   delay(20);
   // setup_digitalRead();
   setup_pins();
+  
+  // from mqtt_opentherm.h
+  mqtt_setup();
 
   WiFi.mode(WIFI_STA);
-  WiFi.begin(SSID_1, PASSWORD_1);
+    connectToWifi();
   while (WiFi.status() != WL_CONNECTED)
   {
       delay(500);
@@ -52,9 +56,10 @@ void setup()
 
   server.begin();
   telnet_server.begin();
-  // Serial.printf("Web server started, open %s in a web browser\n", WiFi.localIP().toString().c_str());
 
+  // Serial.printf("Web server started, open %s in a web browser\n", WiFi.localIP().toString().c_str());
 }
+
 
 #define MODE_LISTEN_MASTER 0
 #define MODE_LISTEN_SLAVE 1
@@ -151,6 +156,7 @@ void no_client_connected_loop() {
     else if (OPENTHERM::getMessage(message)) {
       OPENTHERM::send(BOILER_OUT, message); // forward message to boiler
       mode = MODE_LISTEN_SLAVE;
+      mqttClient.publish("iot/boiler/test", 0, true, OPENTHERM::toOTGWSerialString(message));
     }
   }
   else if (mode == MODE_LISTEN_SLAVE) {
@@ -160,6 +166,7 @@ void no_client_connected_loop() {
     else if (OPENTHERM::getMessage(message)) {
       OPENTHERM::send(THERMOSTAT_OUT, message); // send message back to thermostat
       mode = MODE_LISTEN_MASTER;
+      mqttClient.publish("iot/boiler/test", 0, true, OPENTHERM::toOTGWSerialString(message));
     }
     else if (OPENTHERM::isError()) {
       mode = MODE_LISTEN_MASTER;
