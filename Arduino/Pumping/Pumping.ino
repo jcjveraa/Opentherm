@@ -33,10 +33,10 @@ void setup()
 
   //********** CHANGE PIN FUNCTION  TO GPIO **********
   //GPIO 1 (TX) swap the pin to a GPIO.
-  pinMode(TX, FUNCTION_3);
-  //GPIO 3 (RX) swap the pin to a GPIO.
-  pinMode(RX, FUNCTION_3);
-  //**************************************************
+  //  pinMode(TX, FUNCTION_3);
+  //  //GPIO 3 (RX) swap the pin to a GPIO.
+  //  pinMode(RX, FUNCTION_3);
+  //  //**************************************************
   delay(20);
   // setup_digitalRead();
   setup_pins();
@@ -57,11 +57,13 @@ void setup()
   server.begin();
   telnet_server.begin();
   int num = random(900);
-char cstr[16];
-itoa(num, cstr, 10);
+  char cstr[16];
+  itoa(num, cstr, 10);
   mqttClient.publish("iot/boiler/hallo", 1, true, "le pipi");
 
-  // Serial.printf("Web server started, open %s in a web browser\n", WiFi.localIP().toString().c_str());
+  Serial.begin(115200);
+
+  Serial.printf("Web server started, open %s in a web browser\n", WiFi.localIP().toString().c_str());
 }
 
 
@@ -73,52 +75,50 @@ OpenthermData message;
 void loop()
 {
   server.handleClient();
+  client = telnet_server.available();
 
-  if (telnet_server.hasClient()) {
-    client = telnet_server.available();
+  if (!client) {
+    return;
   }
-
-  // wait for a client (web browser) to connect
-  if (client)
-  {
-    client.println(F("\n[Client connected - let's go!]\n\n"));
-
-    while (client.connected())
-    {
+  if (client) {
+    while (client.connected()) {
       server.handleClient();
-      //      String line;
-      if (client.available() > 0) {
-        //        client.println(F("\n[Client seems to be available!]"));
-        String line = client.readStringUntil('\n');
-        unsigned int buffSize = line.length() + 1;
-        char buff[buffSize];
-        line.toCharArray(buff, buffSize);
-        //        client.println(buff);
-        mqttClient.publish("iot/boiler/tester", 0, true, buff);
+      while (!client.available()) {
+        delay(50);
       }
+      String req = client.readStringUntil('\r');
+      Serial.println(req);
+      client.flush();
 
-//      if (line) {
-//
-//      }
+      message.id = (byte) 'a';
+      message.type = (byte) 'b';
+      message.valueHB = (byte) 'c';
+      message.valueLB = (byte) 'd';
 
-#if TESTMODE==0
-      gateway_loop();
-#endif
+    // Create the hexadecimal representation of the message, with leading zeroes
+    char buffer[9];
+    sprintf(buffer, "%08X",OPENTHERM::construct_data_frame(message));
 
-#if TESTMODE
-      test_loop();
-#endif
-
+      mqttClient.publish("iot/boiler/tester1", 2, true, buffer);
+      mqttClient.publish("iot/boiler/tester2", 2, true, OPENTHERM::toFormattedString(message).c_str());
+      //#if TESTMODE==0
+      //      gateway_loop();
+      //#endif
+      //
+      //#if TESTMODE
+      //      test_loop();
+      //#endif
+      //
+      //    }
+      //  }
+      //
+      //  else {
+      //    no_client_connected_loop();
+      //  }
     }
-
-    // close the connection:
-    client.stop();
-    // Serial.println("[Client disconnected]");
-  }
-  else {
-    no_client_connected_loop();
   }
 }
+
 
 void setup_pins() {
   pinMode(THERMOSTAT_IN, INPUT);
