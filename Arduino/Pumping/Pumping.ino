@@ -29,18 +29,18 @@ void setup()
 {
 
   // Safety delay to ensure that input pins are no longer high.
-  delay(10*1000);
+  delay(10 * 1000);
 
   //********** CHANGE PIN FUNCTION  TO GPIO **********
   //GPIO 1 (TX) swap the pin to a GPIO.
-  pinMode(TX, FUNCTION_3); 
+  pinMode(TX, FUNCTION_3);
   //GPIO 3 (RX) swap the pin to a GPIO.
-  pinMode(RX, FUNCTION_3); 
+  pinMode(RX, FUNCTION_3);
   //**************************************************
   delay(20);
   // setup_digitalRead();
   setup_pins();
-  
+
   // from mqtt_opentherm.h
   mqtt_setup();
 
@@ -48,7 +48,7 @@ void setup()
   connectToWifi();
   while (WiFi.status() != WL_CONNECTED)
   {
-      delay(500);
+    delay(500);
   }
 
   //Updater
@@ -56,6 +56,10 @@ void setup()
 
   server.begin();
   telnet_server.begin();
+  int num = random(900);
+char cstr[16];
+itoa(num, cstr, 10);
+  mqttClient.publish("iot/boiler/hallo", 1, true, "le pipi");
 
   // Serial.printf("Web server started, open %s in a web browser\n", WiFi.localIP().toString().c_str());
 }
@@ -73,38 +77,43 @@ void loop()
   if (telnet_server.hasClient()) {
     client = telnet_server.available();
   }
-  
+
   // wait for a client (web browser) to connect
   if (client)
   {
-    client.println(F("\n[Client connected]"));
+    client.println(F("\n[Client connected - let's go!]\n\n"));
 
     while (client.connected())
     {
       server.handleClient();
-
-      if(client.available()){
-        String line = client.readStringUntil('\r');
-        unsigned int bufSize = line.length();
-        char buff[bufSize+1];
-        line.toCharArray(buff, 10);
+      //      String line;
+      if (client.available() > 0) {
+        //        client.println(F("\n[Client seems to be available!]"));
+        String line = client.readStringUntil('\n');
+        unsigned int buffSize = line.length() + 1;
+        char buff[buffSize];
+        line.toCharArray(buff, buffSize);
+        //        client.println(buff);
         mqttClient.publish("iot/boiler/tester", 0, true, buff);
-        
       }
 
-      #if TESTMODE==0
-      gateway_loop();
-      #endif
+//      if (line) {
+//
+//      }
 
-      #if TESTMODE
+#if TESTMODE==0
+      gateway_loop();
+#endif
+
+#if TESTMODE
       test_loop();
-      #endif
+#endif
 
     }
 
     // close the connection:
     client.stop();
-  // Serial.println("[Client disconnected]");
+    // Serial.println("[Client disconnected]");
   }
   else {
     no_client_connected_loop();
@@ -185,9 +194,9 @@ void no_client_connected_loop() {
 #if TESTMODE
 void test_loop() {
 
-client.println(F("--- START OF TEST CYCLE---"));
+  client.println(F("--- START OF TEST CYCLE---"));
 
-    client.print(F("Boiler inbound, thermostat outbound .. "));
+  client.print(F("Boiler inbound, thermostat outbound .. "));
   digitalWrite(THERMOSTAT_OUT, HIGH);
   digitalWrite(BOILER_OUT, HIGH);
   delay(10);
@@ -208,12 +217,12 @@ client.println(F("--- START OF TEST CYCLE---"));
 
     if (digitalRead(THERMOSTAT_IN) == 0 && digitalRead(BOILER_IN) == 1) { // ok
       client.print(F("line above if clause succes:  "));
-    client.println(__LINE__);
+      client.println(__LINE__);
       client.println(F("OK"));
     }
     else {
       client.print(F("line above else clause triggered:  "));
-    client.println(__LINE__);
+      client.println(__LINE__);
       client.println(F("Failed"));
       client.println(F("Boiler is not registering signal or thermostat is not sending properly"));
     }
@@ -224,12 +233,12 @@ client.println(F("--- START OF TEST CYCLE---"));
     client.println(F("Failed"));
     client.println(F("Boiler is high even if no signal is being sent"));
   }
-  
+
   client.print(F("Boiler outbound, thermostat inbound .. "));
   digitalWrite(THERMOSTAT_OUT, HIGH);
   digitalWrite(BOILER_OUT, HIGH);
   delay(10);
-  
+
   //   print_test_stats();
   // delay(2000);
 
@@ -243,17 +252,17 @@ client.println(F("--- START OF TEST CYCLE---"));
     print_test_stats();
     server.handleClient();
     delay(1000);
-server.handleClient();
+    server.handleClient();
     delay(10);
 
     if (digitalRead(THERMOSTAT_IN) == 1 && digitalRead(BOILER_IN) == 0) { // ok
       client.print(F("line above if clause succes:  "));
-    client.println(__LINE__);
+      client.println(__LINE__);
       client.println(F("OK"));
     }
     else {
       client.print(F("line above else clause triggered:  "));
-    client.println(__LINE__);
+      client.println(__LINE__);
       client.println(F("Failed"));
       client.println(F("Thermostat is not registering signal or boiler is not sending properly"));
     }
@@ -265,16 +274,16 @@ server.handleClient();
     client.println(F("Thermostat is high even if no signal is being sent"));
   }
 
-print_test_stats();
+  print_test_stats();
 
-client.println(F("--- END OF TEST CYCLE---"));
-server.handleClient();
+  client.println(F("--- END OF TEST CYCLE---"));
+  server.handleClient();
   delay(5000);
   server.handleClient();
 }
 
 void print_test_stats() {
-  
+
   client.println(F("THERMOSTAT_IN:  "));
   client.println(digitalRead(THERMOSTAT_IN));
   client.print(F("THERMOSTAT_OUT: "));
@@ -283,7 +292,7 @@ void print_test_stats() {
   client.println(digitalRead(BOILER_IN));
   client.print(F("BOILER_OUT: "));
   client.println(digitalRead(BOILER_OUT));
-  
-  }
+
+}
 
 #endif
