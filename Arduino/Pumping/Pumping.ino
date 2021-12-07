@@ -18,12 +18,15 @@
 #define BOILER_IN TX      // Pin 18 on OTGW PIC ic
 #define BOILER_OUT 0      // Pin 2 on OTGW PIC ic
 
-#define TESTMODE 0
+#define TESTMODE 1
 
 ESP8266WebServer server(80);
-WiFiServer telnet_server(999);
 ESP8266HTTPUpdateServer httpUpdater;
+
+#if TESTMODE
+WiFiServer telnet_server(999);
 WiFiClient client;
+#endif TESTMODE
 
 void setup()
 {
@@ -33,11 +36,11 @@ void setup()
 
   //********** CHANGE PIN FUNCTION  TO GPIO **********
   //GPIO 1 (TX) swap the pin to a GPIO.
-    pinMode(TX, FUNCTION_3);
+  pinMode(TX, FUNCTION_3);
   //  //GPIO 3 (RX) swap the pin to a GPIO.
-    pinMode(RX, FUNCTION_3);
+  pinMode(RX, FUNCTION_3);
   //  //**************************************************
-  delay(20);
+  delay(200);
   // setup_digitalRead();
   setup_pins();
 
@@ -55,15 +58,12 @@ void setup()
   httpUpdater.setup(&server, OTAUSER, OTAPASSWORD);
 
   server.begin();
+#if TESTMODE
   telnet_server.begin();
-  int num = random(900);
-  char cstr[16];
-  itoa(num, cstr, 10);
-  mqttClient.publish("iot/boiler/hallo", 1, true, "le pipi");
+#endif TESTMODE
 
-//  Serial.begin(115200);
+  mqttClient.publish("iot/boiler/version_loaded", 1, true, __DATE__ " " __TIME__);
 
-//  Serial.printf("Web server started, open %s in a web browser\n", WiFi.localIP().toString().c_str());
 }
 
 
@@ -75,50 +75,18 @@ OpenthermData message;
 void loop()
 {
   server.handleClient();
+#if TESTMODE == 1
   client = telnet_server.available();
-
-  if (!client) {
-    return;
-  }
   if (client) {
     while (client.connected()) {
       server.handleClient();
-      while (!client.available()) {
-        delay(50);
-      }
-      String req = client.readStringUntil('\r');
-//      Serial.println(req);
-      client.flush();
-
-      message.id = (byte) 'a';
-      message.type = (byte) 'b';
-      message.valueHB = (byte) 'c';
-      message.valueLB = (byte) 'd';
-
-    // Create the hexadecimal representation of the message, with leading zeroes
-    char buffer[9];
-    sprintf(buffer, "%08X",OPENTHERM::construct_data_frame(message));
-
-      mqttClient.publish("iot/boiler/tester1", 0, true, buffer);
-      mqttClient.publish("iot/boiler/tester2", 0, true, OPENTHERM::toFormattedString(message).c_str());
-      //#if TESTMODE==0
-      //      gateway_loop();
-      //#endif
-      //
-      //#if TESTMODE
-      //      test_loop();
-      //#endif
-      //
-      //    }
-      //  }
-      //
-      //  else {
-      //    no_client_connected_loop();
-      //  }
+      test_loop();
     }
   }
+#else
+  no_client_connected_loop();
+#endif TESTMODE
 }
-
 
 void setup_pins() {
   pinMode(THERMOSTAT_IN, INPUT);
@@ -129,36 +97,8 @@ void setup_pins() {
   digitalWrite(BOILER_IN, HIGH); // pull up
   digitalWrite(BOILER_OUT, HIGH);
   pinMode(BOILER_OUT, OUTPUT); // low output = high voltage, high output = low voltage
-}
 
-void gateway_loop() {
-  if (mode == MODE_LISTEN_MASTER) {
-    if (OPENTHERM::isSent() || OPENTHERM::isIdle() || OPENTHERM::isError()) {
-      OPENTHERM::listen(THERMOSTAT_IN);
-    }
-    else if (OPENTHERM::getMessage(message)) {
-      client.println("From Thermostat");
-      client.println(OPENTHERM::toOTGWSerialString(message));
-      client.println(OPENTHERM::toFormattedString(message));
-      OPENTHERM::send(BOILER_OUT, message); // forward message to boiler
-      mode = MODE_LISTEN_SLAVE;
-    }
-  }
-  else if (mode == MODE_LISTEN_SLAVE) {
-    if (OPENTHERM::isSent()) {
-      OPENTHERM::listen(BOILER_IN, 800); // response need to be send back by boiler within 800ms
-    }
-    else if (OPENTHERM::getMessage(message)) {
-      client.println("From boiler");
-      client.println(OPENTHERM::toOTGWSerialString(message));
-      client.println(OPENTHERM::toFormattedString(message));
-      OPENTHERM::send(THERMOSTAT_OUT, message); // send message back to thermostat
-      mode = MODE_LISTEN_MASTER;
-    }
-    else if (OPENTHERM::isError()) {
-      mode = MODE_LISTEN_MASTER;
-    }
-  }
+  OPENTHERM::setuppp_digitalRead();
 }
 
 void no_client_connected_loop() {
@@ -199,7 +139,7 @@ void test_loop() {
   // print_test_stats();
   // delay(2000);
 
-  if (digitalRead(THERMOSTAT_IN) == 0 && digitalRead(BOILER_IN) == 0) { // ok
+  if (OPENTHERM::my_digitalRead(THERMOSTAT_IN) == 0 && OPENTHERM::my_digitalRead(BOILER_IN) == 0) { // ok
     client.print(F("line above if clause succes:  "));
     client.println(__LINE__);
     // thermostat out low -> boiler in high
@@ -211,7 +151,7 @@ void test_loop() {
     delay(1000);
     server.handleClient();
 
-    if (digitalRead(THERMOSTAT_IN) == 0 && digitalRead(BOILER_IN) == 1) { // ok
+    if (OPENTHERM::my_digitalRead(THERMOSTAT_IN) == 0 && OPENTHERM::my_digitalRead(BOILER_IN) == 1) { // ok
       client.print(F("line above if clause succes:  "));
       client.println(__LINE__);
       client.println(F("OK"));
@@ -238,7 +178,7 @@ void test_loop() {
   //   print_test_stats();
   // delay(2000);
 
-  if (digitalRead(THERMOSTAT_IN) == 0 && digitalRead(BOILER_IN) == 0) { // ok
+  if (OPENTHERM::my_digitalRead(THERMOSTAT_IN) == 0 && OPENTHERM::my_digitalRead(BOILER_IN) == 0) { // ok
     client.print(F("line above if clause succes:  "));
     client.println(__LINE__);
     // boiler out low -> thermostat in high
@@ -251,7 +191,7 @@ void test_loop() {
     server.handleClient();
     delay(10);
 
-    if (digitalRead(THERMOSTAT_IN) == 1 && digitalRead(BOILER_IN) == 0) { // ok
+    if (OPENTHERM::my_digitalRead(THERMOSTAT_IN) == 1 && OPENTHERM::my_digitalRead(BOILER_IN) == 0) { // ok
       client.print(F("line above if clause succes:  "));
       client.println(__LINE__);
       client.println(F("OK"));
@@ -281,13 +221,13 @@ void test_loop() {
 void print_test_stats() {
 
   client.println(F("THERMOSTAT_IN:  "));
-  client.println(digitalRead(THERMOSTAT_IN));
+  client.println(OPENTHERM::my_digitalRead(THERMOSTAT_IN));
   client.print(F("THERMOSTAT_OUT: "));
-  client.println(digitalRead(THERMOSTAT_OUT));
+  client.println(OPENTHERM::my_digitalRead(THERMOSTAT_OUT));
   client.print(F("BOILER_IN:  "));
-  client.println(digitalRead(BOILER_IN));
+  client.println(OPENTHERM::my_digitalRead(BOILER_IN));
   client.print(F("BOILER_OUT: "));
-  client.println(digitalRead(BOILER_OUT));
+  client.println(OPENTHERM::my_digitalRead(BOILER_OUT));
 
 }
 
