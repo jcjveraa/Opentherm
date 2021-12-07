@@ -33,9 +33,9 @@ void setup()
 
   //********** CHANGE PIN FUNCTION  TO GPIO **********
   //GPIO 1 (TX) swap the pin to a GPIO.
-  //  pinMode(TX, FUNCTION_3);
+    pinMode(TX, FUNCTION_3);
   //  //GPIO 3 (RX) swap the pin to a GPIO.
-  //  pinMode(RX, FUNCTION_3);
+    pinMode(RX, FUNCTION_3);
   //  //**************************************************
   delay(20);
   // setup_digitalRead();
@@ -61,9 +61,9 @@ void setup()
   itoa(num, cstr, 10);
   mqttClient.publish("iot/boiler/hallo", 1, true, "le pipi");
 
-  Serial.begin(115200);
+//  Serial.begin(115200);
 
-  Serial.printf("Web server started, open %s in a web browser\n", WiFi.localIP().toString().c_str());
+//  Serial.printf("Web server started, open %s in a web browser\n", WiFi.localIP().toString().c_str());
 }
 
 
@@ -87,7 +87,7 @@ void loop()
         delay(50);
       }
       String req = client.readStringUntil('\r');
-      Serial.println(req);
+//      Serial.println(req);
       client.flush();
 
       message.id = (byte) 'a';
@@ -99,8 +99,8 @@ void loop()
     char buffer[9];
     sprintf(buffer, "%08X",OPENTHERM::construct_data_frame(message));
 
-      mqttClient.publish("iot/boiler/tester1", 2, true, buffer);
-      mqttClient.publish("iot/boiler/tester2", 2, true, OPENTHERM::toFormattedString(message).c_str());
+      mqttClient.publish("iot/boiler/tester1", 0, true, buffer);
+      mqttClient.publish("iot/boiler/tester2", 0, true, OPENTHERM::toFormattedString(message).c_str());
       //#if TESTMODE==0
       //      gateway_loop();
       //#endif
@@ -169,9 +169,7 @@ void no_client_connected_loop() {
     else if (OPENTHERM::getMessage(message)) {
       OPENTHERM::send(BOILER_OUT, message); // forward message to boiler
       mode = MODE_LISTEN_SLAVE;
-      char buffer[10];
-      OPENTHERM::toOTGWSerialString(message).toCharArray(buffer, 10);
-      mqttClient.publish("iot/boiler/OTMessage", 0, true, buffer);
+      mqttClient.publish("iot/boiler/OTMessage", 0, true, OPENTHERM::toFormattedString(message).c_str());
     }
   }
   else if (mode == MODE_LISTEN_SLAVE) {
@@ -181,9 +179,7 @@ void no_client_connected_loop() {
     else if (OPENTHERM::getMessage(message)) {
       OPENTHERM::send(THERMOSTAT_OUT, message); // send message back to thermostat
       mode = MODE_LISTEN_MASTER;
-      char buffer[10];
-      OPENTHERM::toOTGWSerialString(message).toCharArray(buffer, 10);
-      mqttClient.publish("iot/boiler/OTMessage", 0, true, buffer);
+      mqttClient.publish("iot/boiler/OTMessage", 0, true, OPENTHERM::toFormattedString(message).c_str());
     }
     else if (OPENTHERM::isError()) {
       mode = MODE_LISTEN_MASTER;
