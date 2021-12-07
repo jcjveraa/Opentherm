@@ -18,7 +18,7 @@
 #define BOILER_IN TX      // Pin 18 on OTGW PIC ic
 #define BOILER_OUT 0      // Pin 2 on OTGW PIC ic
 
-#define TESTMODE 1
+#define TESTMODE 0
 
 ESP8266WebServer server(80);
 ESP8266HTTPUpdateServer httpUpdater;
@@ -104,7 +104,10 @@ void setup_pins() {
 void no_client_connected_loop() {
   if (mode == MODE_LISTEN_MASTER) {
     if (OPENTHERM::isSent() || OPENTHERM::isIdle() || OPENTHERM::isError()) {
-      OPENTHERM::listen(THERMOSTAT_IN);
+      OPENTHERM::listen(THERMOSTAT_IN, 10000);
+      if(OPENTHERM::isError()) {
+        mqttClient.publish("iot/boiler/error", 0, true, "timeout MODE_LISTEN_MASTER");
+      }
     }
     else if (OPENTHERM::getMessage(message)) {
       OPENTHERM::send(BOILER_OUT, message); // forward message to boiler
@@ -123,6 +126,7 @@ void no_client_connected_loop() {
     }
     else if (OPENTHERM::isError()) {
       mode = MODE_LISTEN_MASTER;
+      mqttClient.publish("iot/boiler/error", 0, true, "timeout MODE_LISTEN_SLAVE");
     }
   }
 }
