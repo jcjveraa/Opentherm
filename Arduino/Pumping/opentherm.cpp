@@ -30,7 +30,7 @@ volatile int OPENTHERM::_timeoutCounter = -1;
 
 void OPENTHERM::listen(byte pin, int timeout, void (*callback)()) {
   _stop();
-  setuppp_digitalRead();
+//  setuppp_digitalRead(); // No need to do this every time...
   _pin = pin;
   _timeoutCounter = timeout * 5; // timer ticks at 5 ticks/ms
   _callback = callback;
