@@ -1,0 +1,4 @@
+{
+    "C_Cpp.vcFormat.newLine.beforeOpenBrace.type": "sameLine",
+    "editor.defaultFormatter": "ms-vscode.cpptools"
+}
